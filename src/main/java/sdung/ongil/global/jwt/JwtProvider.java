@@ -1,4 +1,4 @@
-package sdung.ongil.domain.auth.jwt;
+package sdung.ongil.global.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
