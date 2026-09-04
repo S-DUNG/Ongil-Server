@@ -8,8 +8,6 @@ import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
 import java.net.URI;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,9 +23,8 @@ public class TagoStationClient {
     }
 
     public List<TagoStation> searchNearby(double lat, double lng) {
-        String encodedKey = URLEncoder.encode(serviceKey, StandardCharsets.UTF_8);
         String url = BASE_URL
-                + "?serviceKey=" + encodedKey
+                + "?serviceKey=" + serviceKey
                 + "&_type=json"
                 + "&numOfRows=50"
                 + "&gpsLati=" + lat
