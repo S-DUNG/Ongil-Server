@@ -7,8 +7,6 @@ import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
 import java.net.URI;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import tools.jackson.core.type.TypeReference;
@@ -24,9 +22,8 @@ public class TagoArrivalClient {
         this.serviceKey = serviceKey;
     }
     public List<TagoArrivalItem> getArrivals(String cityCode, String nodeId) {
-        String encodeKey = URLEncoder.encode(serviceKey, StandardCharsets.UTF_8);
         String url = BASE_URL
-                + "?serviceKey=" + encodeKey
+                + "?serviceKey=" + serviceKey
                 + "&_type=json"
                 + "&numOfRows=20"
                 + "&cityCode=" + cityCode
