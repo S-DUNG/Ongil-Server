@@ -3,7 +3,7 @@ package sdung.ongil.domain.stations.service;
 import sdung.ongil.domain.stations.dto.BusArrivalResponse;
 import sdung.ongil.domain.stations.dto.CongestionForecastResponse;
 import sdung.ongil.domain.stations.dto.NearbyStationResponse;
-import sdung.ongil.domain.stations.entity.SmartPadStatus;
+import sdung.ongil.domain.manage.smartpad.entity.SmartPadStatus;
 import sdung.ongil.domain.stations.odsay.OdsayClient;
 import sdung.ongil.domain.stations.odsay.OdsayStation;
 import sdung.ongil.domain.stations.tago.TagoArrivalClient;

@@ -1,7 +1,16 @@
 package sdung.ongil.domain.manage.smartpad.entity;
 
 public enum SmartPadStatus {
-    NORMAL,       // 정상
-    INSPECTING,   // 점검중
-    BROKEN        // 고장
+    NORMAL("정상"),
+    BROKEN("고장"),
+    INSPECTING("점검 중");
+
+    private final String label;
+
+    SmartPadStatus(String label) {
+        this.label = label;
+    }
+    public String getLabel() {
+        return label;
+    }
 }
