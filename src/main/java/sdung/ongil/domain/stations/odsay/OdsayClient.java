@@ -37,25 +37,15 @@ public class OdsayClient {
         String url = UriComponentsBuilder
                 .fromUriString("https://api.odsay.com/v1/api/searchPubTransPathT")
                 .queryParam("apiKey", apiKey)
-                .queryParam("lang", 0)  // ⭐ 추가: 0 = 국문
+                .queryParam("lang", 0)
+                .queryParam("SearchPathType", 2)  // 버스 경로만 검색 (지하철 제외)
                 .queryParam("SX", startLng)
                 .queryParam("SY", startLat)
                 .queryParam("EX", endLng)
                 .queryParam("EY", endLat)
                 .toUriString();
 
-
-        String rawResponse = restTemplate.getForObject(url, String.class);
-        System.out.println("===== ODsay 원본 응답 =====");
-        System.out.println(rawResponse);
-        System.out.println("==========================");
-
-        System.out.println("===== 요청 URL =====");
-        System.out.println(url);
-        System.out.println("=====================");
-
         return restTemplate.getForObject(url, OdsayPathSearchResponse.class);
-
     }
 
 
