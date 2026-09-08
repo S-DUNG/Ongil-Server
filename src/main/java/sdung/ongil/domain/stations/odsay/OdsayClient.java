@@ -31,4 +31,22 @@ public class OdsayClient {
         }
         return response.result().station();
     }
+
+    //경로 탐색
+    public OdsayPathSearchResponse searchPath(double startLat, double startLng, double endLat, double endLng) {
+        String url = UriComponentsBuilder
+                .fromUriString("https://api.odsay.com/v1/api/searchPubTransPathT")
+                .queryParam("apiKey", apiKey)
+                .queryParam("lang", 0)
+                .queryParam("SearchPathType", 2)  // 버스 경로만 검색 (지하철 제외)
+                .queryParam("SX", startLng)
+                .queryParam("SY", startLat)
+                .queryParam("EX", endLng)
+                .queryParam("EY", endLat)
+                .toUriString();
+
+        return restTemplate.getForObject(url, OdsayPathSearchResponse.class);
+    }
+
+
 }
