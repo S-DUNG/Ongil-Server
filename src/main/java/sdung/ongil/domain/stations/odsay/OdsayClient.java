@@ -31,4 +31,32 @@ public class OdsayClient {
         }
         return response.result().station();
     }
+
+    //경로 탐색
+    public OdsayPathSearchResponse searchPath(double startLat, double startLng, double endLat, double endLng) {
+        String url = UriComponentsBuilder
+                .fromUriString("https://api.odsay.com/v1/api/searchPubTransPathT")
+                .queryParam("apiKey", apiKey)
+                .queryParam("lang", 0)  // ⭐ 추가: 0 = 국문
+                .queryParam("SX", startLng)
+                .queryParam("SY", startLat)
+                .queryParam("EX", endLng)
+                .queryParam("EY", endLat)
+                .toUriString();
+
+
+        String rawResponse = restTemplate.getForObject(url, String.class);
+        System.out.println("===== ODsay 원본 응답 =====");
+        System.out.println(rawResponse);
+        System.out.println("==========================");
+
+        System.out.println("===== 요청 URL =====");
+        System.out.println(url);
+        System.out.println("=====================");
+
+        return restTemplate.getForObject(url, OdsayPathSearchResponse.class);
+
+    }
+
+
 }
