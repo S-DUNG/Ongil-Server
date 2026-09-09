@@ -1,6 +1,7 @@
 package sdung.ongil.domain.route.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -10,13 +11,13 @@ import org.springframework.web.server.ResponseStatusException;
 import sdung.ongil.domain.manage.stations.entity.ManageStations;
 import sdung.ongil.domain.manage.stations.repository.ManageStationsRepository;
 import sdung.ongil.domain.route.dto.RouteResponse;
+import sdung.ongil.domain.route.dto.SimpleGuideResponse;
 import sdung.ongil.domain.route.entity.Route;
 import sdung.ongil.domain.route.repository.RouteRepository;
 import sdung.ongil.domain.stations.odsay.OdsayClient;
 import sdung.ongil.domain.stations.odsay.OdsayPathSearchResponse;
-import com.fasterxml.jackson.core.type.TypeReference;
-import sdung.ongil.domain.route.dto.SimpleGuideResponse;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -30,14 +31,13 @@ public class RouteService {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Transactional
-    public RouteResponse searchRoute(Long originId, Long destinationId) {
+    public RouteResponse searchRoute(Long originId, double destinationLat, double destinationLng, String destinationName) {
 
         ManageStations origin = findStationOrThrow(originId);
-        ManageStations destination = findStationOrThrow(destinationId);
 
         OdsayPathSearchResponse response = odsayClient.searchPath(
                 origin.getLatitude(), origin.getLongitude(),
-                destination.getLatitude(), destination.getLongitude()
+                destinationLat, destinationLng
         );
 
         if (response == null || response.result() == null
@@ -52,7 +52,9 @@ public class RouteService {
 
         Route route = new Route(
                 originId,
-                destinationId,
+                destinationLat,
+                destinationLng,
+                destinationName,
                 bestPath.info().totalTime(),
                 bestPath.info().payment(),
                 bestPath.info().busTransitCount(),
@@ -78,18 +80,20 @@ public class RouteService {
                 ));
 
         ManageStations origin = findStationOrThrow(route.getOriginId());
-        ManageStations destination = findStationOrThrow(route.getDestinationId());
+        String destinationName = (route.getDestinationName() != null)
+                ? route.getDestinationName()
+                : "목적지";
 
         List<OdsayPathSearchResponse.SubPath> subPaths = fromJson(route.getPathDataJson());
 
-        List<String> steps = new java.util.ArrayList<>();
+        List<String> steps = new ArrayList<>();
         for (int i = 0; i < subPaths.size(); i++) {
             OdsayPathSearchResponse.SubPath subPath = subPaths.get(i);
             boolean isFirst = (i == 0);
             boolean isLast = (i == subPaths.size() - 1);
 
             String startName = isFirst ? origin.getName() : subPath.startName();
-            String endName = isLast ? destination.getName() : subPath.endName();
+            String endName = isLast ? destinationName : subPath.endName();
 
             steps.add(buildStepSentence(subPath, startName, endName, isLast));
         }
@@ -126,18 +130,6 @@ public class RouteService {
         }
         String busNo = subPath.lane().get(0).busNo();
         return (busNo != null) ? busNo : "";
-    }
-
-    private String buildStepSentence(OdsayPathSearchResponse.SubPath subPath, boolean isLast) {
-        int time = subPath.sectionTime();
-        String ending = isLast ? "이동하면 도착입니다." : "이동하세요.";
-
-        return switch (subPath.trafficType()) {
-            case 1 -> "지하철을 타고 " + subPath.endName() + "까지 " + time + "분 " + ending;
-            case 2 -> "버스를 타고 " + subPath.endName() + "까지 " + time + "분 " + ending;
-            case 3 -> "도보로 " + time + "분 " + ending;
-            default -> time + "분 " + ending;
-        };
     }
 
     private List<OdsayPathSearchResponse.SubPath> fromJson(String json) {

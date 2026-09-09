@@ -19,6 +19,8 @@ import sdung.ongil.domain.manage.stations.dto.ManageStationsUpdateRequest;
 import sdung.ongil.domain.manage.stations.service.ManageStationsService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import sdung.ongil.domain.manage.stations.dto.TagoStationSearchResponse;
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -59,5 +61,13 @@ public class ManageStationsController {
     public ResponseEntity<Void> deleteStation(@PathVariable Long stationId) {
         manageStationsService.deactivateStation(stationId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/tago-search")
+    public ResponseEntity<List<TagoStationSearchResponse>> searchTagoStations(
+            @RequestParam double lat,
+            @RequestParam double lng
+    ) {
+        return ResponseEntity.ok(manageStationsService.searchTagoStations(lat, lng));
     }
 }

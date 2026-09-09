@@ -8,14 +8,15 @@ import java.util.List;
 public class RouteResponse {
 
     private final Long routeId;
+    private final String destinationName;
     private final int totalTime;
     private final int payment;
     private final int transferCount;
     private final List<SegmentResponse> segments;
 
-    // Route Entity + ODsay 원본 구간정보를 합쳐서 응답 DTO로 변환
     public RouteResponse(Route route, List<OdsayPathSearchResponse.SubPath> subPaths) {
         this.routeId = route.getId();
+        this.destinationName = route.getDestinationName();
         this.totalTime = route.getTotalTime();
         this.payment = route.getPayment();
         this.transferCount = route.getTransferCount();
@@ -25,14 +26,14 @@ public class RouteResponse {
     }
 
     public Long getRouteId() { return routeId; }
+    public String getDestinationName() { return destinationName; }
     public int getTotalTime() { return totalTime; }
     public int getPayment() { return payment; }
     public int getTransferCount() { return transferCount; }
     public List<SegmentResponse> getSegments() { return segments; }
 
-    // 구간(버스/지하철/도보) 하나하나를 나타내는 내부 클래스
     public static class SegmentResponse {
-        private final String type;       // "BUS", "SUBWAY", "WALK"
+        private final String type;
         private final Integer sectionTime;
         private final String startName;
         private final String endName;

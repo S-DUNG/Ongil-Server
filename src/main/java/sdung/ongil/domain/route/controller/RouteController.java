@@ -18,13 +18,17 @@ public class RouteController {
 
     private final RouteService routeService;
 
-    // 대중교통 경로 탐색
+    // 대중교통 경로 탐색 (출발지: 등록된 정류장 / 목적지: 임의 좌표)
     @GetMapping
     public ResponseEntity<RouteResponse> searchRoute(
             @RequestParam Long originId,
-            @RequestParam Long destinationId
+            @RequestParam double destinationLat,
+            @RequestParam double destinationLng,
+            @RequestParam(required = false) String destinationName
     ) {
-        return ResponseEntity.ok(routeService.searchRoute(originId, destinationId));
+        return ResponseEntity.ok(
+                routeService.searchRoute(originId, destinationLat, destinationLng, destinationName)
+        );
     }
 
     // AI(알고리즘 기반) 쉬운 경로 안내

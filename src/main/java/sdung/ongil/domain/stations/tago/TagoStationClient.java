@@ -33,6 +33,7 @@ public class TagoStationClient {
         return parseStations(json);
     }
 
+
     private List<TagoStation> parseStations(String json) {
         List<TagoStation> stations = new ArrayList<>();
         if (json == null) {
@@ -61,4 +62,7 @@ public class TagoStationClient {
         }
         return stations;
     }
+
+
+
 }
