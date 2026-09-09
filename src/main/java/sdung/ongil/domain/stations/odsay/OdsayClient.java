@@ -24,6 +24,7 @@ public class OdsayClient {
                 .queryParam("radius", (int) radiusMeters)
                 .queryParam("stationClass", 1)
                 .toUriString();
+
         OdsayPointSearchResponse response = restTemplate.getForObject(url, OdsayPointSearchResponse.class);
 
         if (response == null || response.result() == null || response.result().station() == null) {
@@ -38,7 +39,7 @@ public class OdsayClient {
                 .fromUriString("https://api.odsay.com/v1/api/searchPubTransPathT")
                 .queryParam("apiKey", apiKey)
                 .queryParam("lang", 0)
-                .queryParam("SearchPathType", 2)  // 버스 경로만 검색 (지하철 제외)
+                .queryParam("SearchPathType", 2)
                 .queryParam("SX", startLng)
                 .queryParam("SY", startLat)
                 .queryParam("EX", endLng)

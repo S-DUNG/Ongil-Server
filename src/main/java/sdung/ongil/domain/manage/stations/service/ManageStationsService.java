@@ -7,10 +7,14 @@ import org.springframework.transaction.annotation.Transactional;
 import sdung.ongil.domain.manage.stations.dto.ManageStationsCreateRequest;
 import sdung.ongil.domain.manage.stations.dto.ManageStationsResponse;
 import sdung.ongil.domain.manage.stations.dto.ManageStationsUpdateRequest;
+import sdung.ongil.domain.manage.stations.dto.TagoStationSearchResponse;
 import sdung.ongil.domain.manage.stations.entity.ManageStations;
 import sdung.ongil.domain.manage.stations.repository.ManageStationsRepository;
+import sdung.ongil.domain.stations.tago.TagoStationClient;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +22,8 @@ import org.springframework.data.domain.Pageable;
 @Builder
 public class ManageStationsService {
     private final ManageStationsRepository manageStationsRepository;
+    private final TagoStationClient tagoStationClient;
+
     public Page<ManageStationsResponse> getStations(String keyword, Pageable pageable) {
         Page<ManageStations> stations = (keyword == null || keyword.isBlank())
                 ? manageStationsRepository.findByActiveTrue(pageable)
@@ -27,6 +33,12 @@ public class ManageStationsService {
 
     public ManageStationsResponse getStation(Long stationId) {
         return ManageStationsResponse.from(findActiveStation(stationId));
+    }
+
+    public List<TagoStationSearchResponse> searchTagoStations(double lat, double lng) {
+        return tagoStationClient.searchNearby(lat, lng).stream()
+                .map(TagoStationSearchResponse::from)
+                .toList();
     }
 
     @Transactional
