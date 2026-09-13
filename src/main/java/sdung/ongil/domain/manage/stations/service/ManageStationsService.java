@@ -37,7 +37,13 @@ public class ManageStationsService {
 
     public List<TagoStationSearchResponse> searchTagoStations(double lat, double lng) {
         return tagoStationClient.searchNearby(lat, lng).stream()
-                .map(TagoStationSearchResponse::from)
+                .map(tagoStation -> {
+                    Long stationId = manageStationsRepository
+                            .findByTagoStationId(tagoStation.nodeId())
+                            .map(ManageStations::getId)
+                            .orElse(null);
+                    return TagoStationSearchResponse.from(tagoStation, stationId);
+                })
                 .toList();
     }
 
