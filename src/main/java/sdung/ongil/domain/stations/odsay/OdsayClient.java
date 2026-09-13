@@ -1,6 +1,9 @@
 package sdung.ongil.domain.stations.odsay;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -11,6 +14,7 @@ import java.util.List;
 public class OdsayClient {
     private final RestTemplate restTemplate = new RestTemplate();
     private final String apiKey;
+
     public OdsayClient(@Value("${odsay.api-key}") String apiKey) {
         this.apiKey = apiKey;
     }
@@ -33,7 +37,7 @@ public class OdsayClient {
         return response.result().station();
     }
 
-    //경로 탐색
+    // 경로 탐색
     public OdsayPathSearchResponse searchPath(double startLat, double startLng, double endLat, double endLng) {
         String url = UriComponentsBuilder
                 .fromUriString("https://api.odsay.com/v1/api/searchPubTransPathT")
@@ -46,8 +50,15 @@ public class OdsayClient {
                 .queryParam("EY", endLat)
                 .toUriString();
 
-        return restTemplate.getForObject(url, OdsayPathSearchResponse.class);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Referer", "http://localhost:8080");  // ODsay 콘솔에 등록한 URI와 정확히 동일하게
+
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+        // 임시: 원본 문자열로 먼저 확인
+        String rawResponse = restTemplate.exchange(url, HttpMethod.GET, entity, String.class).getBody();
+        System.out.println("ODsay 원본 문자열 응답: " + rawResponse);
+
+        return restTemplate.exchange(url, HttpMethod.GET, entity, OdsayPathSearchResponse.class).getBody();
     }
-
-
 }
