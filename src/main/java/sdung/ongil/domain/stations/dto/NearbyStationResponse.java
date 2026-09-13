@@ -7,6 +7,7 @@ public record NearbyStationResponse(
         double lng,
         double distanceMeters,
         String tagoNodeId,
-        String tagoCityCode
+        String tagoCityCode,
+        Long manageStationId
 ) {
 }

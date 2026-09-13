@@ -1,5 +1,7 @@
 package sdung.ongil.domain.stations.service;
 
+import sdung.ongil.domain.manage.stations.entity.ManageStations;
+import sdung.ongil.domain.manage.stations.repository.ManageStationsRepository;
 import sdung.ongil.domain.stations.dto.BusArrivalResponse;
 import sdung.ongil.domain.stations.dto.CongestionForecastResponse;
 import sdung.ongil.domain.stations.dto.NearbyStationResponse;
@@ -24,15 +26,18 @@ public class StationsService {
     private final OdsayClient odsayClient;
     private final TagoStationClient tagoStationClient;
     private final TagoArrivalClient tagoArrivalClient;
+    private final ManageStationsRepository manageStationsRepository;
 
     public StationsService(
             OdsayClient odsayClient,
             TagoStationClient tagoStationClient,
-            TagoArrivalClient tagoArrivalClient
+            TagoArrivalClient tagoArrivalClient,
+            ManageStationsRepository manageStationsRepository
     ) {
         this.odsayClient = odsayClient;
         this.tagoStationClient = tagoStationClient;
         this.tagoArrivalClient = tagoArrivalClient;
+        this.manageStationsRepository = manageStationsRepository;
     }
 
     public List<NearbyStationResponse> findNearbyStations(double lat, double lng, double radiusMeters) {
@@ -44,6 +49,12 @@ public class StationsService {
             double distance = haversineDistance(lat, lng, s.y(), s.x());
             TagoStation matched = findNearestTago(s.y(), s.x(), tagoStations);
 
+            Long manageStationId = (matched != null)
+                    ? manageStationsRepository.findByTagoStationId(matched.nodeId())
+                            .map(ManageStations::getId)
+                            .orElse(null)
+                    : null;
+
             result.add(new NearbyStationResponse(
                     String.valueOf(s.stationID()),
                     s.stationName(),
@@ -51,7 +62,8 @@ public class StationsService {
                     s.x(),
                     Math.round(distance * 10) / 10.0,
                     matched != null ? matched.nodeId() : null,
-                    matched != null ? matched.cityCode() : null
+                    matched != null ? matched.cityCode() : null,
+                    manageStationId
             ));
         }
         result.sort(Comparator.comparingDouble(NearbyStationResponse::distanceMeters));
