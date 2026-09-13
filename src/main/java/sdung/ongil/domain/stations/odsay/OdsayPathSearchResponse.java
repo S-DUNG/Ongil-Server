@@ -7,6 +7,7 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record OdsayPathSearchResponse(
         Result result
+
 ) {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Result(
