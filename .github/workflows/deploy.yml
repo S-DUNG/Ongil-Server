@@ -16,6 +16,14 @@ jobs:
           distribution: 'temurin'
           java-version: '25'
 
+      - name: Create application.properties
+        run: echo "${{ secrets.APPLICATION_PROPERTIES_B64 }}" | base64 -d > src/main/resources/application.properties
+
+      - name: Build jar
+        run: |
+          chmod +x gradlew
+          ./gradlew bootJar -x test
+
       - name: Build jar
         run: |
           chmod +x gradlew
