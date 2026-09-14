@@ -26,6 +26,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 // JWT 방식이라 세션/쿠키 기반 CSRF 방어는 필요 없어서 꺼둠
                 .csrf(AbstractHttpConfigurer::disable)
 
