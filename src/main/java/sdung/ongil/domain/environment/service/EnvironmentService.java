@@ -25,7 +25,9 @@ public class EnvironmentService {
         GridConverter.Grid grid = GridConverter.toGrid(lat, lng);
         KmaWeatherApiResponse response = kmaWeatherClient.getUltraSrtNcst(grid.nx(), grid.ny());
 
-        List<KmaWeatherApiResponse.Item> items = response.getResponse().getBody().getItems().getItem();
+        KmaWeatherApiResponse.Items itemsWrapper = response.getResponse().getBody().getItems();
+        List<KmaWeatherApiResponse.Item> items =
+                (itemsWrapper == null || itemsWrapper.getItem() == null) ? List.of() : itemsWrapper.getItem();
         Map<String, String> values = items.stream()
                 .collect(Collectors.toMap(
                         KmaWeatherApiResponse.Item::getCategory,
@@ -45,7 +47,10 @@ public class EnvironmentService {
     public SafetyResponseDto getSafety(double lat, double lng) {
         String sidoName = kakaoRegionClient.getSidoName(lat, lng);
         AirKoreaApiResponse response = airKoreaClient.getRealtimeDensityBysido(sidoName);
-        List<AirKoreaApiResponse.Item> items = response.getResponse().getBody().getItems();
+
+        List<AirKoreaApiResponse.Item> rawItems = response.getResponse().getBody().getItems();
+        List<AirKoreaApiResponse.Item> items = rawItems == null ? List.of() : rawItems;
+
         AirKoreaApiResponse.Item nearest = items.isEmpty() ? null : items.get(0);
         Integer pm10 = nearest == null ? null : parseInt(nearest.getPm10Value());
         Integer pm25 = nearest == null ? null : parseInt(nearest.getPm25Value());
