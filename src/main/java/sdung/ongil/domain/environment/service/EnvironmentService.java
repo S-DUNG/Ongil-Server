@@ -2,6 +2,7 @@ package sdung.ongil.domain.environment.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
 import sdung.ongil.domain.environment.client.AirKoreaClient;
 import sdung.ongil.domain.environment.client.KakaoRegionClient;
 import sdung.ongil.domain.environment.client.KmaWeatherClient;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class EnvironmentService {
+
     private final KmaWeatherClient kmaWeatherClient;
     private final AirKoreaClient airKoreaClient;
     private final KakaoRegionClient kakaoRegionClient;
@@ -52,15 +54,16 @@ public class EnvironmentService {
         List<AirKoreaApiResponse.Item> items = rawItems == null ? List.of() : rawItems;
 
         AirKoreaApiResponse.Item nearest = items.isEmpty() ? null : items.get(0);
+
         Integer pm10 = nearest == null ? null : parseInt(nearest.getPm10Value());
         Integer pm25 = nearest == null ? null : parseInt(nearest.getPm25Value());
 
         return SafetyResponseDto.builder()
                 .sidoName(sidoName)
                 .stationName(nearest == null ? null : nearest.getStationName())
-                .pm10value(pm10)
+                .pm10Value(pm10)
                 .pm10Grade(gradeOfPm10(pm10))
-                .pm25value(pm25)
+                .pm25Value(pm25)
                 .pm25Grade(gradeOfPm25(pm25))
                 .safetyMessage(buildSafetyMessage(pm10, pm25))
                 .build();

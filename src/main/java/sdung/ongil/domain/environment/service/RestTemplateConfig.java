@@ -8,13 +8,16 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.web.client.RestTemplate;
 
 @Configuration
-@SuppressWarnings("removal")
 public class RestTemplateConfig {
+
     @Bean
     public RestTemplate restTemplate() {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true);
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter(objectMapper);
+
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.getMessageConverters().add(0, converter);
         return restTemplate;
