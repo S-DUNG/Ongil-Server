@@ -7,6 +7,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import sdung.ongil.domain.environment.dto.KmaWeatherApiResponse;
 
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -37,7 +38,7 @@ public class KmaWeatherClient {
                 .queryParam("ny", ny)
                 .build(true)
                 .toUriString();
-        return restTemplate.getForObject(url, KmaWeatherApiResponse.class);
+        return restTemplate.getForObject(URI.create(url), KmaWeatherApiResponse.class);
     }
 
     private LocalDateTime resolveBaseDateTime() {

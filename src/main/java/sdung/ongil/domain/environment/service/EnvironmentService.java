@@ -46,7 +46,7 @@ public class EnvironmentService {
 
     public SafetyResponseDto getSafety(double lat, double lng) {
         String sidoName = kakaoRegionClient.getSidoName(lat, lng);
-        AirKoreaApiResponse response = airKoreaClient.getRealtimeDensityBysido(sidoName);
+        AirKoreaApiResponse response = airKoreaClient.getRealtimeDensityBySido(sidoName);
 
         List<AirKoreaApiResponse.Item> rawItems = response.getResponse().getBody().getItems();
         List<AirKoreaApiResponse.Item> items = rawItems == null ? List.of() : rawItems;
