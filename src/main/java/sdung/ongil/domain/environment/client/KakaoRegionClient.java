@@ -11,6 +11,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import sdung.ongil.domain.environment.dto.KakaoRegionApiResponse;
 
+import java.net.URI;
 import java.util.Map;
 
 @Component
@@ -57,7 +58,7 @@ public class KakaoRegionClient {
         headers.set("Authorization", "KakaoAK " + restApiKey);
 
         KakaoRegionApiResponse response = restTemplate.exchange(
-                url, HttpMethod.GET, new HttpEntity<>(headers), KakaoRegionApiResponse.class
+                URI.create(url), HttpMethod.GET, new HttpEntity<>(headers), KakaoRegionApiResponse.class
         ).getBody();
 
         if (response == null || response.getDocuments().isEmpty()) {
