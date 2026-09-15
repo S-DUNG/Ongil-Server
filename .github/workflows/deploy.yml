@@ -44,4 +44,4 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             cd ~/Ongil-DevOps
-            DOCKER_BUILDKIT=0 docker-compose up -d --build app
+            DOCKER_BUILDKIT=0 docker-compose up -d --build --force-recreate app
