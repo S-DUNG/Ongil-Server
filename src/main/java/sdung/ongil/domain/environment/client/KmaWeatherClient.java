@@ -35,7 +35,7 @@ public class KmaWeatherClient {
                 .queryParam("base_time", baseTime)
                 .queryParam("nx", nx)
                 .queryParam("ny", ny)
-                .build()
+                .build(true)
                 .toUriString();
         return restTemplate.getForObject(url, KmaWeatherApiResponse.class);
     }

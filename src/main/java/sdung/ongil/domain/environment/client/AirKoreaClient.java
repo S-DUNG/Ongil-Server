@@ -26,7 +26,7 @@ public class AirKoreaClient {
                 .queryParam("pageNo", 1)
                 .queryParam("sidoName", sidoName)
                 .queryParam("ver", "1.3")
-                .build()
+                .build(true)
                 .toUriString();
 
         return restTemplate.getForObject(url, AirKoreaApiResponse.class);
