@@ -50,7 +50,7 @@ public class KakaoRegionClient {
         String url = UriComponentsBuilder.fromUriString(BASE_URL)
                 .queryParam("x", lng) // 경도
                 .queryParam("y", lat) // 위도
-                .build(true)
+                .build()
                 .toUriString();
 
         HttpHeaders headers = new HttpHeaders();
