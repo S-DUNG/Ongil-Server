@@ -27,10 +27,11 @@ public class HelpRequest {
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false,columnDefinition = "TEXT")
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
-    private String location;
+    @Column(nullable = false)
+    private Long stationId;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
@@ -44,12 +45,12 @@ public class HelpRequest {
 
     protected HelpRequest(){}
 
-    public HelpRequest(String requestId, String requesterId, String title, String content, String location) {
+    public HelpRequest(String requestId, String requesterId, String title, String content, Long stationId) {
         this.requestId = requestId;
         this.requesterId = requesterId;
         this.title = title;
         this.content = content;
-        this.location = location;
+        this.stationId = stationId;
         this.status = HelpRequestStatus.PENDING;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = this.createdAt;
@@ -80,8 +81,8 @@ public class HelpRequest {
         return content;
     }
 
-    public String getLocation() {
-        return location;
+    public Long getStationId() {
+        return stationId;
     }
 
     public HelpRequestStatus getStatus() {

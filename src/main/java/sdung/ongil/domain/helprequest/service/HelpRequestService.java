@@ -27,7 +27,7 @@ public class HelpRequestService {
                 request.requesterId(),
                 request.title(),
                 request.content(),
-                request.location()
+                request.stationId()
         );
 
         HelpRequest saved = helpRequestRepository.save(helpRequest);
