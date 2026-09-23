@@ -29,8 +29,13 @@ public class OdsayClient {
                 .queryParam("stationClass", 1)
                 .toUriString();
 
-        OdsayPointSearchResponse response = restTemplate.getForObject(url, OdsayPointSearchResponse.class);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Referer", "http://localhost:8080");
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
 
+        OdsayPointSearchResponse response = restTemplate.exchange(
+                url, HttpMethod.GET, entity, OdsayPointSearchResponse.class
+        ).getBody();
         if (response == null || response.result() == null || response.result().station() == null) {
             return List.of();
         }
