@@ -1,5 +1,7 @@
 package sdung.ongil.domain.stations.odsay;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -10,9 +12,11 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
 
+@Slf4j
 @Component
 public class OdsayClient {
     private final RestTemplate restTemplate = new RestTemplate();
+    private final ObjectMapper objectMapper = new ObjectMapper();
     private final String apiKey;
 
     public OdsayClient(@Value("${odsay.api-key}") String apiKey) {
@@ -33,13 +37,19 @@ public class OdsayClient {
         headers.set("Referer", "http://localhost:8080");
         HttpEntity<Void> entity = new HttpEntity<>(headers);
 
-        OdsayPointSearchResponse response = restTemplate.exchange(
-                url, HttpMethod.GET, entity, OdsayPointSearchResponse.class
-        ).getBody();
-        if (response == null || response.result() == null || response.result().station() == null) {
+        String rawResponse = restTemplate.exchange(url, HttpMethod.GET, entity, String.class).getBody();
+
+        try {
+            OdsayPointSearchResponse response = objectMapper.readValue(rawResponse, OdsayPointSearchResponse.class);
+            if (response.result() == null || response.result().station() == null) {
+                log.warn("Odsay pointSearch 빈 결과. lat={}, lng={}, rawResponse={}", lat, lng, rawResponse);
+                return List.of();
+            }
+            return response.result().station();
+        } catch (Exception e) {
+            log.error("Odsay pointSearch 파싱 실패(에러 응답 의심). lat={}, lng={}, rawResponse={}", lat, lng, rawResponse, e);
             return List.of();
         }
-        return response.result().station();
     }
 
     // 경로 탐색
@@ -56,13 +66,12 @@ public class OdsayClient {
                 .toUriString();
 
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Referer", "http://localhost:8080");  // ODsay 콘솔에 등록한 URI와 정확히 동일하게
+        headers.set("Referer", "http://localhost:8080");
 
         HttpEntity<Void> entity = new HttpEntity<>(headers);
 
-        // 임시: 원본 문자열로 먼저 확인
         String rawResponse = restTemplate.exchange(url, HttpMethod.GET, entity, String.class).getBody();
-        System.out.println("ODsay 원본 문자열 응답: " + rawResponse);
+        log.info("Odsay searchPath 원본 응답: {}", rawResponse);
 
         return restTemplate.exchange(url, HttpMethod.GET, entity, OdsayPathSearchResponse.class).getBody();
     }
