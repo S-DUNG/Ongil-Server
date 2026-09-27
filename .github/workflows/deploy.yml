@@ -61,7 +61,7 @@ jobs:
         uses: sarisia/actions-status-discord@v1
         with:
           webhook: ${{ secrets.DISCORD_SERVER_WEBHOOK }}
-          status: ${{ job.status }}
+          status: ${{git job.status }}
           title: '❗️ [Server] 이미지 푸시 실패 ❗️'
           description: 'GHCR 이미지 빌드 또는 푸시 실패'
           color: 16711680
