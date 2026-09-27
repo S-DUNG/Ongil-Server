@@ -3,6 +3,7 @@ name: Spring Boot CD
 on:
   push:
     branches: [ develop ]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -16,7 +17,7 @@ env:
   IMAGE_NAME: ghcr.io/s-dung/ongil-server
 
 jobs:
-  deploy:
+  build-and-push:
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
@@ -61,7 +62,7 @@ jobs:
         uses: sarisia/actions-status-discord@v1
         with:
           webhook: ${{ secrets.DISCORD_SERVER_WEBHOOK }}
-          status: ${{git job.status }}
+          status: ${{ job.status }}
           title: '❗️ [Server] 이미지 푸시 실패 ❗️'
           description: 'GHCR 이미지 빌드 또는 푸시 실패'
           color: 16711680
