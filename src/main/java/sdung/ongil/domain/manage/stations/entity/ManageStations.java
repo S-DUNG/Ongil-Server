@@ -30,6 +30,12 @@ public class ManageStations {
     @Column(nullable = false, length = 100)
     private String name;
 
+    @Column(nullable = false)
+    private Double latitude;
+
+    @Column(nullable = false)
+    private Double longitude;
+
     @Column(length = 255)
     private String address;
 
@@ -56,11 +62,15 @@ public class ManageStations {
     public ManageStations(String tagoStationId, String name, Double latitude, Double longitude, String address) {
         this.tagoStationId = tagoStationId;
         this.name = name;
+        this.latitude = latitude;
+        this.longitude = longitude;
         this.address = address;
     }
 
-    public void updateInfo(String name, String address) {
+    public void updateInfo(String name, Double latitude, Double longitude, String address) {
         if (name != null) this.name = name;
+        if (latitude != null) this.latitude = latitude;
+        if (longitude != null) this.longitude = longitude;
         if (address != null) this.address = address;
     }
 
