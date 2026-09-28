@@ -1,6 +1,5 @@
 package sdung.ongil.domain.manage.stations.service;
 
-import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,11 +14,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-@Builder
 public class ManageStationsService {
     private final ManageStationsRepository manageStationsRepository;
     private final TagoStationClient tagoStationClient;
@@ -39,7 +38,7 @@ public class ManageStationsService {
         return tagoStationClient.searchNearby(lat, lng).stream()
                 .map(tagoStation -> {
                     Long stationId = manageStationsRepository
-                            .findByTagoStationId(tagoStation.nodeId())
+                            .findByTagoStationIdAndActiveTrue(tagoStation.nodeId())
                             .map(ManageStations::getId)
                             .orElse(null);
                     return TagoStationSearchResponse.from(tagoStation, stationId);
@@ -49,10 +48,21 @@ public class ManageStationsService {
 
     @Transactional
     public ManageStationsResponse createStation(ManageStationsCreateRequest request) {
-        if (manageStationsRepository.existsByTagoStationId(request.tagoStationId())) {
-            throw new IllegalStateException(
-                    "이미 등록된 TAGO 정류장입니다. tagoStationId=" + request.tagoStationId());
+        Optional<ManageStations> existing =
+                manageStationsRepository.findByTagoStationId(request.tagoStationId());
+
+        if (existing.isPresent()) {
+            ManageStations station = existing.get();
+            if (station.isActive()) {
+                throw new IllegalStateException(
+                        "이미 등록된 TAGO 정류장입니다. tagoStationId=" + request.tagoStationId());
+            }
+            // 삭제(비활성)된 정류장이면 새로 만들지 않고 되살리면서 입력값으로 갱신
+            station.activate();
+            station.updateInfo(request.name(), request.latitude(), request.longitude(), request.address());
+            return ManageStationsResponse.from(station);
         }
+
         ManageStations stations = ManageStations.builder()
                 .tagoStationId(request.tagoStationId())
                 .name(request.name())

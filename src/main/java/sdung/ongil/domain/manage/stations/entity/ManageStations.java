@@ -77,4 +77,5 @@ public class ManageStations {
     public void deactivate() {
         this.active = false;
     }
+    public void activate() {this.active = true;}
 }

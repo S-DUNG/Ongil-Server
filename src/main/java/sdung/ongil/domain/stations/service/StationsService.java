@@ -50,7 +50,7 @@ public class StationsService {
             TagoStation matched = findNearestTago(s.y(), s.x(), tagoStations);
 
             Long manageStationId = (matched != null)
-                    ? manageStationsRepository.findByTagoStationId(matched.nodeId())
+                    ? manageStationsRepository.findByTagoStationIdAndActiveTrue(matched.nodeId())
                             .map(ManageStations::getId)
                             .orElse(null)
                     : null;
