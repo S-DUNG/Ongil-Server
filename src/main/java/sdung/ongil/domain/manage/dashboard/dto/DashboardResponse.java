@@ -15,7 +15,7 @@ public class DashboardResponse {
     public DashboardResponse(long totalStationCount,
                              long totalSmartPadCount,
                              List<SmartPadStatusCountDto> smartPadStatusCounts,
-                             List<RecentItemDto> recetStations,
+                             List<RecentItemDto> recentStations,
                              List<RecentItemDto> recentSmartPads) {
         this.totalStationCount = totalStationCount;
         this.totalSmartPadCount = totalSmartPadCount;
