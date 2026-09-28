@@ -6,5 +6,6 @@ import sdung.ongil.domain.manage.stations.entity.ManageStations;
 import java.util.List;
 
 public interface DashboardStationRepository extends JpaRepository<ManageStations, Long> {
-    List<ManageStations> findTop5ByOrderByCreatedAtDesc();
+    long countByActiveTrue();
+    List<ManageStations> findTop5ByActiveTrueOrderByCreatedAtDesc();
 }

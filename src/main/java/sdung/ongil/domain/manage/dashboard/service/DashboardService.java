@@ -21,7 +21,7 @@ public class DashboardService {
     private final DashboardSmartPadRepository smartPadRepository;
 
     public DashboardResponse getDashboard() {
-        long totalStationCount = stationRepository.count();
+        long totalStationCount = stationRepository.countByActiveTrue();
         long totalSmartPadCount = smartPadRepository.count();
 
         List<SmartPadStatusCountDto> statusCountDtos = smartPadRepository.countGroupByStatus().stream()
@@ -32,7 +32,7 @@ public class DashboardService {
                 ))
                 .collect(Collectors.toList());
 
-        List<RecentItemDto> recentStations = stationRepository.findTop5ByOrderByCreatedAtDesc().stream()
+        List<RecentItemDto> recentStations = stationRepository.findTop5ByActiveTrueOrderByCreatedAtDesc().stream()
                 .map(station -> new RecentItemDto(station.getId(), station.getName(), station.getCreatedAt()))
                 .collect(Collectors.toList());
 
