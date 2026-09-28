@@ -33,7 +33,7 @@ public class RouteService {
     @Transactional
     public RouteResponse searchRoute(Long originId, double destinationLat, double destinationLng, String destinationName) {
 
-        ManageStations origin = findStationOrThrow(originId);
+        ManageStations origin = findActiveStationOrThrow(originId);
 
         OdsayPathSearchResponse response = odsayClient.searchPath(
                 origin.getLatitude(), origin.getLongitude(),
@@ -70,6 +70,15 @@ public class RouteService {
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "해당 정류장을 찾을 수 없습니다. id=" + stationId
                 ));
+    }
+
+    private ManageStations findActiveStationOrThrow(Long stationId) {
+        ManageStations station = findStationOrThrow(stationId);
+        if (!station.isActive()) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "해당 정류장을 찾을 수 없습니다. id=" + stationId);
+        }
+        return station;
     }
 
     @Transactional(readOnly = true)
