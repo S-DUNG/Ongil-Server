@@ -56,8 +56,6 @@ public class ManageStationsService {
         ManageStations stations = ManageStations.builder()
                 .tagoStationId(request.tagoStationId())
                 .name(request.name())
-                .latitude(request.latitude())
-                .longitude(request.longitude())
                 .address(request.address())
                 .build();
         return ManageStationsResponse.from(manageStationsRepository.save(stations));
@@ -66,7 +64,7 @@ public class ManageStationsService {
     @Transactional
     public ManageStationsResponse updateStation(Long stationId, ManageStationsUpdateRequest request) {
         ManageStations stations = findActiveStation(stationId);
-        stations.updateInfo(request.name(),  request.latitude(), request.longitude(), request.address());
+        stations.updateInfo(request.name(), request.address());
         return ManageStationsResponse.from(stations);
     }
 
