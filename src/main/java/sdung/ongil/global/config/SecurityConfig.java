@@ -53,7 +53,9 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of(
-                "http://localhost:5173"
+                "http://localhost:5173",    // 개발용
+                "https://d3c8bo44oqkc3.cloudfront.net",   // client
+                "https://d49lezf2g36yt.cloudfront.net"    // admin
         ));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
