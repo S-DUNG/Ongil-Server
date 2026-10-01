@@ -3,6 +3,9 @@ package sdung.ongil.domain.manage.stations.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import sdung.ongil.domain.manage.stations.Kakao.GeocodeResult;
+import sdung.ongil.domain.destination.kakao.KakaoLocalClient;
+import sdung.ongil.domain.manage.stations.Kakao.KakaoGeocodingClient;
 import sdung.ongil.domain.manage.stations.dto.ManageStationsCreateRequest;
 import sdung.ongil.domain.manage.stations.dto.ManageStationsResponse;
 import sdung.ongil.domain.manage.stations.dto.ManageStationsUpdateRequest;
@@ -22,6 +25,7 @@ import java.util.Optional;
 public class ManageStationsService {
     private final ManageStationsRepository manageStationsRepository;
     private final TagoStationClient tagoStationClient;
+    private final KakaoGeocodingClient kakaoGeocodingClient;
 
     public Page<ManageStationsResponse> getStations(String keyword, Pageable pageable) {
         Page<ManageStations> stations = (keyword == null || keyword.isBlank())
@@ -46,6 +50,12 @@ public class ManageStationsService {
                 .toList();
     }
 
+    public List<TagoStationSearchResponse> searchTagoStationsByAddress(String address) {
+        GeocodeResult geo = kakaoGeocodingClient.geocode(address)
+                .orElseThrow(() -> new IllegalArgumentException("주소를 찾을 수 없습니다. address=" + address));
+        return searchTagoStations(geo.lat(), geo.lng());
+    }
+
     @Transactional
     public ManageStationsResponse createStation(ManageStationsCreateRequest request) {
         Optional<ManageStations> existing =
@@ -57,7 +67,7 @@ public class ManageStationsService {
                 throw new IllegalStateException(
                         "이미 등록된 TAGO 정류장입니다. tagoStationId=" + request.tagoStationId());
             }
-            // 삭제(비활성)된 정류장이면 새로 만들지 않고 되살리면서 입력값으로 갱신
+
             station.activate();
             station.updateInfo(request.name(), request.latitude(), request.longitude(), request.address());
             return ManageStationsResponse.from(station);
@@ -93,5 +103,15 @@ public class ManageStationsService {
             throw new IllegalArgumentException("정류장을 찾을 수 없습니다. id=" + stationId);
         }
         return stations;
+    }
+
+    private double haversineDistance(double lat1, double lng1, double lat2, double lng2) {
+        double earthRadius = 6371000;
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLng = Math.toRadians(lng2 - lng1);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+        return earthRadius * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     }
 }

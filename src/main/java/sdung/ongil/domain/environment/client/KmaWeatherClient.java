@@ -9,6 +9,7 @@ import sdung.ongil.domain.environment.dto.KmaWeatherApiResponse;
 
 import java.net.URI;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 @Component
@@ -42,7 +43,7 @@ public class KmaWeatherClient {
     }
 
     private LocalDateTime resolveBaseDateTime() {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
         if (now.getMinute() < 45) {
             now = now.minusHours(1);
         }

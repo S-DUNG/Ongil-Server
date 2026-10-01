@@ -6,6 +6,7 @@ public record TagoStationSearchResponse(
         Long stationId,
         String tagoStationId,
         String name,
+        String nodeNo,
         double latitude,
         double longitude
 ) {
@@ -14,6 +15,7 @@ public record TagoStationSearchResponse(
                 stationId,
                 station.nodeId(),
                 station.nodeNm(),
+                station.nodeNo(),
                 station.gpsLati(),
                 station.gpsLong()
         );

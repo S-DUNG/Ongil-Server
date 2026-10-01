@@ -70,4 +70,11 @@ public class ManageStationsController {
     ) {
         return ResponseEntity.ok(manageStationsService.searchTagoStations(lat, lng));
     }
+
+    @GetMapping("/geocode-search")
+    public ResponseEntity<List<TagoStationSearchResponse>> searchTagoStationsByAddress(
+            @RequestParam String address
+    ) {
+        return ResponseEntity.ok(manageStationsService.searchTagoStationsByAddress(address));
+    }
 }
