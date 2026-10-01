@@ -5,6 +5,7 @@ public record TagoStation(
         String nodeNm,
         double gpsLati,
         double gpsLong,
-        String cityCode
+        String cityCode,
+        String nodeNo
 ) {
 }

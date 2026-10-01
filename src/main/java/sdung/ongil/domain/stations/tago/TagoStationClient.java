@@ -55,7 +55,8 @@ public class TagoStationClient {
                         item.path("nodenm").asText(),
                         item.path("gpslati").asDouble(),
                         item.path("gpslong").asDouble(),
-                        item.path("citycode").asText()
+                        item.path("citycode").asText(),
+                        item.path("nodeno").asText()
                 ));
             }
         } catch (Exception e) {
