@@ -34,9 +34,8 @@ public class KakaoGeocodingClient {
         headers.set("Authorization", "KakaoAK" + restApiKey);
         HttpEntity<Void> entity = new HttpEntity<>(headers);
 
-        String rawResponse = restTemplate.exchange(url, HttpMethod.GET, entity, String.class).getBody();
-
         try {
+            String rawResponse = restTemplate.exchange(url, HttpMethod.GET, entity, String.class).getBody();
             KakaoAddressSearchResponse response =
                     objectMapper.readValue(rawResponse, KakaoAddressSearchResponse.class);
 
@@ -49,8 +48,12 @@ public class KakaoGeocodingClient {
             double lng = Double.parseDouble(doc.x());
             double lat = Double.parseDouble(doc.y());
             return Optional.of(new GeocodeResult(lat, lng));
+        } catch (org.springframework.web.client.RestClientResponseException e) {
+            log.error("카카오 주소 검색 API 호출 실패. address={}, status={}, body={}",
+                    address, e.getStatusCode(), e.getResponseBodyAsString(), e);
+            return Optional.empty();
         } catch (Exception e) {
-            log.error("카카오 주소 검색 파싱 실패(에러 응답 의심). address={}, rawResponse={}", address, rawResponse, e);
+            log.error("카카오 주소 검색 파싱 실패(에러 응답 의심). address={}, rawResponse={}", address, e);
             return Optional.empty();
         }
     }
