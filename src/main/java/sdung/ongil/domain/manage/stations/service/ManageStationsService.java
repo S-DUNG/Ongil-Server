@@ -1,10 +1,11 @@
 package sdung.ongil.domain.manage.stations.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 import sdung.ongil.domain.manage.stations.Kakao.GeocodeResult;
-import sdung.ongil.domain.destination.kakao.KakaoLocalClient;
 import sdung.ongil.domain.manage.stations.Kakao.KakaoGeocodingClient;
 import sdung.ongil.domain.manage.stations.dto.ManageStationsCreateRequest;
 import sdung.ongil.domain.manage.stations.dto.ManageStationsResponse;
@@ -16,6 +17,7 @@ import sdung.ongil.domain.stations.tago.TagoStationClient;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,6 +42,7 @@ public class ManageStationsService {
 
     public List<TagoStationSearchResponse> searchTagoStations(double lat, double lng) {
         return tagoStationClient.searchNearby(lat, lng).stream()
+                .sorted(Comparator.comparingDouble(s -> haversineDistance(lat, lng, s.gpsLati(), s.gpsLong())))
                 .map(tagoStation -> {
                     Long stationId = manageStationsRepository
                             .findByTagoStationIdAndActiveTrue(tagoStation.nodeId())
@@ -52,7 +55,8 @@ public class ManageStationsService {
 
     public List<TagoStationSearchResponse> searchTagoStationsByAddress(String address) {
         GeocodeResult geo = kakaoGeocodingClient.geocode(address)
-                .orElseThrow(() -> new IllegalArgumentException("주소를 찾을 수 없습니다. address=" + address));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "주소를 찾을 수 없습니다. address=" + address));
         return searchTagoStations(geo.lat(), geo.lng());
     }
 

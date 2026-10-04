@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.util.Optional;
 
 @Slf4j
@@ -24,18 +25,19 @@ public class KakaoGeocodingClient {
     }
 
     public Optional<GeocodeResult> geocode(String address) {
-        String url = UriComponentsBuilder
+        URI uri = UriComponentsBuilder
                 .fromUriString("https://dapi.kakao.com/v2/local/search/address.json")
                 .queryParam("query", address)
+                .build()
                 .encode()
-                .toUriString();
+                .toUri();
 
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "KakaoAK" + restApiKey);
+        headers.set("Authorization", "KakaoAK " + restApiKey);
         HttpEntity<Void> entity = new HttpEntity<>(headers);
 
         try {
-            String rawResponse = restTemplate.exchange(url, HttpMethod.GET, entity, String.class).getBody();
+            String rawResponse = restTemplate.exchange(uri, HttpMethod.GET, entity, String.class).getBody();
             KakaoAddressSearchResponse response =
                     objectMapper.readValue(rawResponse, KakaoAddressSearchResponse.class);
 
@@ -53,7 +55,7 @@ public class KakaoGeocodingClient {
                     address, e.getStatusCode(), e.getResponseBodyAsString(), e);
             return Optional.empty();
         } catch (Exception e) {
-            log.error("카카오 주소 검색 파싱 실패(에러 응답 의심). address={}, rawResponse={}", address, e);
+            log.error("카카오 주소 검색 파싱 실패(에러 응답 의심). address={}", address, e);
             return Optional.empty();
         }
     }
